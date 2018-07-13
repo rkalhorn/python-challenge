@@ -2,37 +2,58 @@ import csv
 
 cvsPath = 'Resources/election_data.csv'
 
+# Function that will print given string to both given output file and to the screen
+def printme(str,wr):
+   wr.writerow([str])
+   print(str)
+   return
+
 votes=[]
 candidates=[]
 candidateVoteCount=[]
 
-#search through budget data to find election results
-print("Election Results")
-print("-------------------------------")
+# Search through budget data to find election results
 with open(cvsPath, newline='') as csvfile:
-    # skips headerline
+    # Skips headerline
     csvfile.readline()
     # CSV reader specifies delimiter and variable that holds contents
     electionData = csv.reader(csvfile, delimiter=",")
   
-     # Create candidate list
+    # The total number of votes cast
     for row in electionData:
         votes.append(row[2])
     numVotes = len(votes)
-    #The total number of votes cast
-    print("Total Votes: "+ '{:,.0f}'.format(numVotes))
-    print("-------------------------------")
+    
+# Create candidate list
+candidates=list(set(votes))
 
-    candidates=list(set(votes))
-    #A complete list of candidates who received votes
-    #The percentage of votes each candidate won
-    #The total number of votes each candidate won
+# Find the number of votes for each candidate
+for candidate in candidates:
+    candidateVoteCount.append(votes.count(candidate))
+    
+
+# Write output to file and screen. 
+# Seems that this could be done using logging, but in class we discussed writer. 
+# So I will use writer with the function printme that I wrote above.
+# Set variable for output file
+outPath = ("output_file.csv")
+
+# Open the output file
+with open(outPath, "w", newline="") as datafile:
+    # By including delimiter="\t" this eliminates quotes that were showing up around lines with formatted numbers.
+    writer = csv.writer(datafile,delimiter="\t")
+
+    # Print output
+    printme("Election Results",writer)
+    printme("-------------------------------",writer)
+    printme((str("Total Votes: ")+ '{:,.0f}'.format(numVotes)).strip('"\''),writer)
+    #printme(str("Total Votes: ")+ str(numVotes),writer)
+    printme("-------------------------------",writer)
     for candidate in candidates:
         candidateVoteCount.append(votes.count(candidate))
-        print(str(candidate)+ ": "+'{:,.1f}%'.format(int(candidateVoteCount[-1])/numVotes*100)+ " ("+'{:,.0f}'.format(candidateVoteCount[-1])+")")
-
-#The winner of the election based on popular vote.
-    print("-------------------------------")
-    print("Winner: "+str(candidates[candidateVoteCount.index(max(candidateVoteCount))]))
-    print("-------------------------------")
-
+        mystr='{:,.1f}%'.format(int(candidateVoteCount[-1])/numVotes*100)
+        printme(str(candidate)+ ": "+mystr+ " ("+'{:,.0f}'.format(candidateVoteCount[-1])+")",writer)
+    printme("-------------------------------",writer)
+    printme("Winner: "+str(candidates[candidateVoteCount.index(max(candidateVoteCount))]),writer)
+    printme("-------------------------------",writer)
+   
