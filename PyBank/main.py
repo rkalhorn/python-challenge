@@ -1,7 +1,12 @@
 import csv
-import datetime
 
 cvsPath = 'Resources/budget_data.csv'
+
+# Function that will print given string to both given output file and to the screen
+def printme(str,wr):
+   wr.writerow([str])
+   print(str)
+   return
 
 months = []
 rev = []
@@ -39,9 +44,19 @@ with open(cvsPath, newline='') as csvfile:
 
   averageChangeProfitLoss = (int(rev[-1])-int(rev[0]))/(len(rev)-1)
 
-  print("Total Months: "+str(len(set(months))))
-  print("Total Revenue: "+'${:,.0f}'.format(sum(int(i) for i in rev)))
-  print("Average Monthly Revenue Chanage " + '${:,.0f}'.format(averageChangeProfitLoss))
-  print("Greatest Monthly Revenue Increase "+str(greatestInc[0])+ " ("+'${:,.0f}'.format(greatestInc[1]) +")")
-  print("Greatest Monthly Revenue Decrease "+str(greatestDec[0])+ " ("+'${:,.0f}'.format(greatestDec[1])+")" )
+# Seems that this could be done using logging, but in class we discussed writer. 
+# So I will use writer with the function printme that I wrote above.
+# Set variable for output file
+outPath = ("output_file.csv")
+
+# Open the output file
+with open(outPath, "w", newline="") as datafile:
+    # By including delimiter="\t" this eliminates quotes that were showing up around lines with formatted numbers.
+  writer = csv.writer(datafile,delimiter="\t")
+
+  printme("Total Months: "+str(len(set(months))),writer)
+  printme("Total Revenue: "+'${:,.0f}'.format(sum(int(i) for i in rev)),writer)
+  printme("Average Monthly Revenue Chanage " + '${:,.0f}'.format(averageChangeProfitLoss),writer)
+  printme("Greatest Monthly Revenue Increase "+str(greatestInc[0])+ " ("+'${:,.0f}'.format(greatestInc[1]) +")",writer)
+  printme("Greatest Monthly Revenue Decrease "+str(greatestDec[0])+ " ("+'${:,.0f}'.format(greatestDec[1])+")",writer)
             
